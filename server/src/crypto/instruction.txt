@@ -1,0 +1,13 @@
+1. Download the latest Crypto++'s source code from here:
+    https://github.com/weidai11/cryptopp/releases
+(there is no preprepared bin file)
+
+2. Compile the Crypto++ library using make
+
+3. Update local Makefile to point to proper include and library directories/files
+ (you can copy all the .h files of the Crypto++ to some 'include/crypto++' dir, and the libcryptopp.a (created after the Crypto++ compilation) to some 'lib' dir)
+
+4. Now you can build the Crypto module and test program using the local Makefile.
+    Have fun using cryptographic classes.
+
+TODO: Integrate this module with TIN_Locus's CMake system.

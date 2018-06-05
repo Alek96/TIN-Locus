@@ -23,8 +23,8 @@ namespace message {
             EraseFileDescriptor,
             PacketSend,
             PacketReceive,
-            UpgradeClientWithEncryption,
-            UpgradeClientWithProtocol
+            Update,
+            EraseObserver,
         };
 
         Message() = default;
@@ -54,6 +54,7 @@ namespace message {
         std::unique_ptr<sockaddr> sock_addr;
         std::unique_ptr<EPollEvent *> ePollEvent;
         std::unique_ptr<BlockingQueue<Message> *> blockingQueue;
+        std::unique_ptr<short> id;
     };
 }
 

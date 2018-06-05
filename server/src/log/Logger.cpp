@@ -3,7 +3,7 @@
 #include <chrono>
 #include "Colour.h"
 
-namespace log {
+namespace Log {
 
     void Logger::logMessage(std::string message) {
         std::lock_guard<std::mutex> guard(loggerMutex);
@@ -45,4 +45,4 @@ namespace log {
         return std::string(std::ctime(&timeT)).substr(0, std::string(std::ctime(&timeT)).size() - 1);
     }
 
-} // end log namespace
+} // end Log namespace

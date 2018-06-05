@@ -4,7 +4,7 @@ set(SOURCE_FILES
         BlockingBuffer.cpp BlockingBuffer.h
         Converter.h
         Buffer.cpp Buffer.h
-        BlockBuffer.cpp BlockBuffer.h PipeBuffer.cpp PipeBuffer.h)
+        BlockBuffer.cpp BlockBuffer.h PipeBuffer.cpp PipeBuffer.h RandomStringGenerator.cpp RandomStringGenerator.h)
 
 add_subdirectory(test)
 

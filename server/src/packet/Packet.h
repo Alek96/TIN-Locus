@@ -15,6 +15,9 @@ namespace packet {
         Buffer &getBuffer();
         const Buffer &getBuffer() const;
 
+        void addTypeToBuffer();
+        void parse();
+
     private:
         PacketType::header type = PacketType::UNDEFINED;
         Buffer buffer;

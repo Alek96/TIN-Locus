@@ -23,7 +23,7 @@
 const uint16_t PORT = 55555;
 
 const uint32_t REMOTE_SRV_ADDR = INADDR_LOOPBACK;
-const uint16_t REMOTE_SRV_PORT = 9999;
+uint16_t REMOTE_SRV_PORT = 9999;
 
 const std::size_t MSG_BUF_SIZE = 100;
 
@@ -33,6 +33,10 @@ extern "C" void * reading_thread_routine(void *socket_fd);
 
 int main(int argc, char** argv)
 {
+    if(argc == 2) {
+        REMOTE_SRV_PORT = static_cast<uint16_t>(atoi(argv[1]));
+    }
+
     // Install signal handlers
     // The signals SIGKILL and SIGSTOP cannot be caught, blocked, or ignored.
     if( std::signal(SIGINT, signal_handler) == SIG_ERR ) // terminal interrupt signal, ctrl + c

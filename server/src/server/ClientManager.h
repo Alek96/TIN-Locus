@@ -34,10 +34,6 @@ private:
     void eraseClient(const int &fileDescriptor);
 
     void closeAllClients();
-
-    void upgradeClientWithEncryption(int &fileDescriptor);
-
-    void upgradeClientWithProtocol(int &fileDescriptor);
 };
 
 

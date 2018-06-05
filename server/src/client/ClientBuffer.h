@@ -33,8 +33,8 @@ private:
     BlockingBuffer bufferOut;
     message::BlockingQueue<message::Message> *clientBlockingQueue = nullptr;
 
-    std::vector<std::byte> recv(const size_t &n) const;
-    std::vector<std::byte>  send(std::vector<std::byte> buffer) const;
+    std::vector<unsigned char> recv(const size_t &n) const;
+    std::vector<unsigned char>  send(std::vector<unsigned char> buffer) const;
 };
 
 

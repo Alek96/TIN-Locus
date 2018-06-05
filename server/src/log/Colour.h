@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace log {
+namespace Log {
 
     struct Colour {
         enum Code {
@@ -60,7 +60,7 @@ namespace log {
 
     std::ostream &operator<<(std::ostream &os, Colour const &);
 
-} // end log namespace
+} // end Log namespace
 
 
 #endif // LOCUS_COLOUR_H_INCLUDED

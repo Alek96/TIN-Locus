@@ -13,8 +13,8 @@ public:
     void recv() override = 0;
     void send() override = 0;
 
-    virtual void sendData(const std::vector<std::byte> &bytes) = 0;
-    virtual std::vector<std::byte> recvData() = 0;
+    virtual void sendData(const std::vector<unsigned char> &bytes) = 0;
+    virtual std::vector<unsigned char> recvData() = 0;
 
     virtual void sendPacket(const packet::Packet &packet);
     virtual packet::Packet recvPacket();

@@ -67,10 +67,6 @@ namespace message {
                 return std::string("PacketSend");
             case PacketReceive:
                 return std::string("PacketReceive");
-            case UpgradeClientWithEncryption:
-                return std::string("UpgradeClientWithEncryption");
-            case UpgradeClientWithProtocol:
-                return std::string("UpgradeClientWithProtocol");
         }
     }
 }

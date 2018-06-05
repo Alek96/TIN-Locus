@@ -1,4 +1,4 @@
-package com.github.koraxiss;
+package test.java.com.github.koraxiss;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

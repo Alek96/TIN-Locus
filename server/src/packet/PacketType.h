@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <unordered_map>
+#include <string>
 
 namespace packet {
     struct PacketType {
@@ -33,6 +34,8 @@ namespace packet {
         static uint8_t toUInt8(PacketType::header header);
 
         static PacketType::header toPacketType(uint8_t header);
+
+        static std::string toString(PacketType::header header);
     };
 
 }

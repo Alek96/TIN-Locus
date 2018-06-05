@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-using namespace log;
+using namespace Log;
 using namespace message;
 using namespace std::chrono_literals;
 
@@ -61,26 +61,6 @@ void ClientManager::recv() {
             }
             break;
 
-        case Message::UpgradeClientWithEncryption:
-            if (!msg.fileDescriptor) {
-                Logger::getInstance().logDebug(
-                        "ClientManager: UpgradeClientWithEncryption message doesn't contain fileDescriptor");
-            } else {
-                Logger::getInstance().logMessage("ClientManager: Get UpgradeClientWithEncryption message");
-                upgradeClientWithEncryption(*msg.fileDescriptor);
-            }
-            break;
-
-        case Message::UpgradeClientWithProtocol:
-            if (!msg.fileDescriptor) {
-                Logger::getInstance().logDebug(
-                        "ClientManager: UpgradeClientWithProtocol message doesn't contain fileDescriptor");
-            } else {
-                Logger::getInstance().logMessage("ClientManager: Get UpgradeClientWithProtocol message");
-                upgradeClientWithProtocol(*msg.fileDescriptor);
-            }
-            break;
-
         default:
             Logger::getInstance().logDebug("ClientManager: Get unexpected message: " + msg.toString());
     }
@@ -89,35 +69,45 @@ void ClientManager::recv() {
 void ClientManager::addClient(const int &fileDescriptor, const sockaddr &sock_addr) {
     //Create ClientBuffer
     std::unique_ptr<ClientBuffer> clientBuffer = std::make_unique<ClientBuffer>(fileDescriptor);
+    auto clientBufferPtr = clientBuffer.get();
 
+    //Create SimpleClient
+    auto simpleClient = std::make_unique<SimpleClient>(sock_addr, std::move(clientBuffer), &getBlockingQueue());
+
+    //Create EncryptClient
+    auto encryptClient = std::make_unique<EncryptClient>(std::move(simpleClient));
+    
+    //Create ProtocolClient
+            auto cryptoModule = &encryptClient->getCryptoModule();
+    auto protocolClient = std::make_unique<ProtocolClient>(std::move(encryptClient), *cryptoModule);
+    
+    //Add client to map
+    clientsMap.emplace(fileDescriptor, std::move(protocolClient));
+    
+    {//Add ProtocolClient to server
+        Message msg = Message(Message::AddEPollEvent);
+        msg.ePollEvent = std::make_unique<EPollEvent *>(&*clientsMap.at(fileDescriptor));
+        server.getBlockingQueue().push(std::move(msg));
+    }
+    
 
     {//Add buffer to receiver
         Message msg = Message(Message::AddEPollEvent);
-        msg.ePollEvent = std::make_unique<EPollEvent *>(clientBuffer.get());;
+        msg.ePollEvent = std::make_unique<EPollEvent *>(clientBufferPtr);;
         receiver.getBlockingQueue().push(std::move(msg));
     }
 
     {//Add buffer to sender
         Message msg = Message(Message::AddEPollEvent);
-        msg.ePollEvent = std::make_unique<EPollEvent *>(clientBuffer.get());
+        msg.ePollEvent = std::make_unique<EPollEvent *>(clientBufferPtr);
         sender.getBlockingQueue().push(std::move(msg));
-    }
-
-    //Create SimpleClient
-    clientsMap.emplace(fileDescriptor,
-                       std::make_unique<SimpleClient>(sock_addr, std::move(clientBuffer), &getBlockingQueue()));
-
-    {//Add SimpleClient to server
-        Message msg = Message(Message::AddEPollEvent);
-        msg.ePollEvent = std::make_unique<EPollEvent *>(&*clientsMap.at(fileDescriptor));
-        server.getBlockingQueue().push(std::move(msg));
     }
 }
 
 void ClientManager::eraseClient(const int &fileDescriptor) {
     auto it = clientsMap.find(fileDescriptor);
     if (it == clientsMap.end()) {
-        Logger::getInstance().logDebug("ClientManager: fileDescriptor not register");
+        Logger::getInstance().logDebug("ClientManager: fileDescriptor is not registered");
         return;
     }
 
@@ -126,29 +116,3 @@ void ClientManager::eraseClient(const int &fileDescriptor) {
 }
 
 void ClientManager::closeAllClients() {}
-
-void ClientManager::upgradeClientWithEncryption(int &fileDescriptor) {
-    //Create EncryptClient
-    auto client = std::make_unique<EncryptClient>(std::move(clientsMap.at(fileDescriptor)));
-    clientsMap.erase(fileDescriptor);
-    clientsMap.emplace(fileDescriptor, std::move(client));
-
-    {//Change to EncryptClient in server
-        Message msg = Message(Message::ChangeEPollEvent);
-        msg.ePollEvent = std::make_unique<EPollEvent *>(&*clientsMap.at(fileDescriptor));
-        server.getBlockingQueue().push(std::move(msg));
-    }
-}
-
-void ClientManager::upgradeClientWithProtocol(int &fileDescriptor) {
-    //Create ProtocolClient
-    auto client = std::make_unique<ProtocolClient>(std::move(clientsMap.at(fileDescriptor)));
-    clientsMap.erase(fileDescriptor);
-    clientsMap.emplace(fileDescriptor, std::move(client));
-
-    {//Change to ProtocolClient in server
-        Message msg = Message(Message::ChangeEPollEvent);
-        msg.ePollEvent = std::make_unique<EPollEvent *>(&*clientsMap.at(fileDescriptor));
-        server.getBlockingQueue().push(std::move(msg));
-    }
-}

@@ -3,7 +3,7 @@
 
 #include "buffer/Converter.h"
 
-using namespace packet;
+using namespace buffer;
 
 TEST(BlockBuffer_getSize, Empty) {
     BlockBuffer buffer;
@@ -13,11 +13,11 @@ TEST(BlockBuffer_getSize, Empty) {
 TEST(BlockBuffer_push, fewElem) {
     BlockBuffer buffer;
 
-    std::vector<std::byte> bytes(5, std::byte(1));
+    std::vector<unsigned char> bytes(5, 1);
     buffer.push(bytes);
     EXPECT_EQ(buffer.size(), 1);
 
-    buffer.push(std::vector<std::byte>(5, std::byte(2)));
+    buffer.push(std::vector<unsigned char>(5, 2));
     EXPECT_EQ(buffer.size(), 2);
 
     buffer.push(2);
@@ -36,8 +36,8 @@ TEST(BlockBuffer_pop, Empty) {
 TEST(BlockBuffer_pop, NonEmpty1) {
     BlockBuffer buffer;
 
-    std::vector<std::byte> bytes(5, std::byte(1));
-    std::vector<std::byte> bytes2(bytes);
+    std::vector<unsigned char> bytes(5, 1);
+    std::vector<unsigned char> bytes2(bytes);
     buffer.push(bytes);
 
     EXPECT_EQ(buffer.pop(), bytes2);
@@ -47,8 +47,8 @@ TEST(BlockBuffer_pop, NonEmpty1) {
 TEST(BlockBuffer_pop, NonEmpty2) {
     BlockBuffer buffer;
 
-    std::vector<std::byte> bytes(5, std::byte(1));
-    std::vector<std::byte> bytes2(bytes);
+    std::vector<unsigned char> bytes(5, 1);
+    std::vector<unsigned char> bytes2(bytes);
     buffer.push(std::move(bytes));
 
     auto out = buffer.pop();
@@ -72,7 +72,7 @@ TEST(BlockBuffer_pop, NonEmpty3) {
 TEST(BlockBuffer_pop, NonEmpty4) {
     BlockBuffer buffer;
 
-    std::vector<std::byte> bytes(4, std::byte(0));
+    std::vector<unsigned char> bytes(4, 0);
     buffer.push(bytes);
 
     int result;
@@ -83,7 +83,7 @@ TEST(BlockBuffer_pop, NonEmpty4) {
 TEST(BlockBuffer_pop, NonEmpty5) {
     BlockBuffer buffer;
 
-    std::vector<std::byte> bytes(4, std::byte(0));
+    std::vector<unsigned char> bytes(4, 0);
     buffer.push(std::move(bytes));
 
     int result;

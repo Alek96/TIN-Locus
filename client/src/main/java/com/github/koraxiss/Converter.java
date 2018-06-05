@@ -1,6 +1,7 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 public class Converter {
@@ -14,25 +15,25 @@ public class Converter {
 
     public static byte[] floatToByte(float f) {
         byte[] bytes = new byte[4];
-        ByteBuffer.wrap(bytes).putFloat(f);
+        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).putFloat(f);
         return bytes;
     }
 
     public static float byteToFloat(byte[] b) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(b);
-        return byteBuffer.getFloat();
+        return byteBuffer.order(ByteOrder.LITTLE_ENDIAN).getFloat();
     }
 
     public static byte[] shortToByte(short s) {
         byte[] bytes = new byte[2];
         ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
-        buffer.putShort(s);
+        buffer.order(ByteOrder.LITTLE_ENDIAN).putShort(s);
         return buffer.array();
     }
 
     public static short byteToShort(byte[] bytes) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        return byteBuffer.getShort();
+        return byteBuffer.order(ByteOrder.LITTLE_ENDIAN).getShort();
     }
 
     public static byte[] stringToByte(String string) {
@@ -45,13 +46,13 @@ public class Converter {
 
     public static long byteToLong(byte[] longBytes){
         ByteBuffer byteBuffer = ByteBuffer.wrap(longBytes);
-        return byteBuffer.getLong();
+        return byteBuffer.order(ByteOrder.LITTLE_ENDIAN).getLong();
     }
 
     public static byte[] longToByte(long l) {
         byte[] bytes = new byte[8];
         ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
-        buffer.putLong(l);
+        buffer.order(ByteOrder.LITTLE_ENDIAN).putLong(l);
         return buffer.array();
     }
 }

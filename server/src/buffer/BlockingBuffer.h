@@ -15,9 +15,11 @@ public:
     template<typename T>
     void push_back(T &&bytes);
 
-    std::vector<std::byte> pop() override;
+    std::vector<unsigned char> pop() override;
 
-    std::vector<std::byte> pop(const size_t &n) override;
+    std::vector<unsigned char> pop(const size_t &n) override;
+
+    std::vector<unsigned char> popAll() override;
 
 private:
     std::mutex accessMutex;
@@ -25,8 +27,8 @@ private:
 
 template<typename T>
 void BlockingBuffer::push_front(T &&bytes) {
-    static_assert(std::is_same<std::vector<std::byte>, typename std::remove_reference<T>::type>::value,
-                  "Parameter in push_front must be std::vector<std::byte> type");
+    static_assert(std::is_same<std::vector<unsigned char>, typename std::remove_reference<T>::type>::value,
+                  "Parameter in push_front must be std::vector<unsigned char> type");
 
     std::lock_guard<std::mutex> guard(accessMutex);
     Buffer::push_front(bytes);
@@ -34,9 +36,9 @@ void BlockingBuffer::push_front(T &&bytes) {
 
 template<typename T>
 void BlockingBuffer::push_back(T &&bytes) {
-//    static_assert(std::is_same<std::vector<std::byte>, typename std::remove_const<std::remove_reference<T>>::type>::value,
-    static_assert(std::is_same<std::vector<std::byte>, typename std::remove_reference<T>::type>::value,
-                  "Parameter in push_back must be std::vector<std::byte> type");
+//    static_assert(std::is_same<std::vector<unsigned char>, typename std::remove_const<std::remove_reference<T>>::type>::value,
+    static_assert(std::is_same<std::vector<unsigned char>, typename std::remove_reference<T>::type>::value,
+                  "Parameter in push_back must be std::vector<unsigned char> type");
 
     std::lock_guard<std::mutex> guard(accessMutex);
     Buffer::push_back(bytes);

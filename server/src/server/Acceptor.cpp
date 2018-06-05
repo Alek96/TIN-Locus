@@ -9,7 +9,7 @@
 #include <cerrno>
 #include "log/Logger.h"
 
-using namespace log;
+using namespace Log;
 using namespace message;
 
 //namespace  {

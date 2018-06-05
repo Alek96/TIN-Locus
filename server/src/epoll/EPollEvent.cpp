@@ -21,7 +21,7 @@ void EPollEvent::setFileDescriptor(const int &fileDescriptor) {
 EPollEvent::~EPollEvent() {
     if (fileDescriptor > 2) {
         close(fileDescriptor);
-        log::Logger::getInstance().logMessage(
+        Log::Logger::getInstance().logMessage(
                 "EPollEvent: Close file descriptor: " + std::to_string(fileDescriptor));
     }
 }

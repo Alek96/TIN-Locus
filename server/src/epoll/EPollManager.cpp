@@ -7,7 +7,7 @@
 #include <cstring>
 #include <cerrno>
 
-using namespace log;
+using namespace Log;
 using namespace message;
 using namespace std::chrono_literals;
 
@@ -15,7 +15,7 @@ using namespace std::chrono_literals;
 
 EPollManager::EPollManager(const std::string &name)
         : name(name), events(static_cast<unsigned long>(maxSizeEvents)) {
-    Logger::getInstance().logMessage(name + ": Initialize");
+    Logger::getInstance().logDebug(name + ": Initialize");
     ePollFD = epoll_create1(0);
     if (ePollFD < 0) {
         throw std::runtime_error(name + ": Error while creating epoll: " + std::string(std::strerror(errno)));
@@ -67,18 +67,23 @@ void EPollManager::readEPoll() {
     }
 
     for (int i = 0; i < nfds; ++i) {
-        if (events[i].events & EPOLLIN) {
-            Logger::getInstance().logDebug(name + ": Run recv for " + std::to_string(
-                    static_cast<EPollEvent *>(events[i].data.ptr)->getFileDescriptor()));
-            static_cast<EPollEvent *>(events[i].data.ptr)->recv();
-        } else if (events[i].events & EPOLLOUT) {
-            Logger::getInstance().logDebug(name + ": Run send for " + std::to_string(
-                    static_cast<EPollEvent *>(events[i].data.ptr)->getFileDescriptor()));
-            static_cast<EPollEvent *>(events[i].data.ptr)->send();
-        } else {
-            Logger::getInstance().logError(
-                    name + ": Error on file descriptor " + std::to_string(events[i].events)
-                    + " with error: " + std::string(std::strerror(errno)));
+        try {
+
+            if (events[i].events & EPOLLIN) {
+                Logger::getInstance().logDebug(name + ": Run recv for " + std::to_string(
+                        static_cast<EPollEvent *>(events[i].data.ptr)->getFileDescriptor()));
+                static_cast<EPollEvent *>(events[i].data.ptr)->recv();
+            } else if (events[i].events & EPOLLOUT) {
+                Logger::getInstance().logDebug(name + ": Run send for " + std::to_string(
+                        static_cast<EPollEvent *>(events[i].data.ptr)->getFileDescriptor()));
+                static_cast<EPollEvent *>(events[i].data.ptr)->send();
+            } else {
+                Logger::getInstance().logError(
+                        name + ": Error on file descriptor " + std::to_string(events[i].events)
+                        + " with error: " + std::string(std::strerror(errno)));
+            }
+        } catch (std::exception &e) {
+            Logger::getInstance().logError(name + ": Error in readEPoll: " + e.what());
         }
     }
 }

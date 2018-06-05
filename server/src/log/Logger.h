@@ -4,7 +4,7 @@
 #include <iostream>
 #include <mutex>
 
-namespace log {
+namespace Log {
 
     class Logger {
         Logger() = default;
@@ -34,7 +34,7 @@ namespace log {
         std::string getTime();
     };
 
-} // end log namespace
+} // end Log namespace
 
 
 #endif //LOCUS_LOGGER_H

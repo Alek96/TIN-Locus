@@ -7,10 +7,10 @@
 #include <iomanip>
 #include <cstddef>
 
-namespace packet {
+namespace buffer {
 
 //    using byte = unsigned char;
-    using byte = std::byte;
+    using byte = unsigned char;
 
     template<typename T>
     std::vector<byte> to_bytes(const T &object) {
@@ -32,17 +32,14 @@ namespace packet {
 
         return object;
     }
-    /*
-     * using:
-     * int n = 8;
-     * const auto bytes = to_bytes(n);
-     *
-     * int m;
-     * from_bytes( bytes, m );
-     * 
-     * website address:
-     * http://www.cplusplus.com/forum/beginner/155821/
-     */
+
+    inline std::vector<byte> toByteVector(const std::string &string) {
+        return std::vector<byte>(string.begin(), string.end());
+    }
+
+    inline std::string toString(const std::vector<byte> &vector) {
+        return std::string(vector.begin(), vector.end());
+    }
 }
 
 #endif //LOCUS_CONVERTER_H

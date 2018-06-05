@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include "Converter.h"
 
-namespace packet {
+namespace buffer {
     class BlockBuffer {
     public:
         BlockBuffer() = default;
@@ -15,19 +15,19 @@ namespace packet {
         const size_t size() const;
         const size_t frontSize() const;
 
-        void push(const std::vector<std::byte> &bytes);
-        void push(std::vector<std::byte> &&bytes);
+        void push(const std::vector<unsigned char> &bytes);
+        void push(std::vector<unsigned char> &&bytes);
 
         template<typename T>
         void push(const T &object);
 
-        std::vector<std::byte> pop();
+        std::vector<unsigned char> pop();
 
         template<typename T>
         T &pop(T &object);
 
-        std::list< std::vector<std::byte> > &operator*();
-        const std::list< std::vector<std::byte> > &operator*() const;
+        std::list< std::vector<unsigned char> > &operator*();
+        const std::list< std::vector<unsigned char> > &operator*() const;
 
         bool operator==(const BlockBuffer &rhs) const;
         bool operator!=(const BlockBuffer &rhs) const;
@@ -38,7 +38,7 @@ namespace packet {
         bool operator>=(const BlockBuffer &rhs) const;
         
     private:
-        std::list< std::vector<std::byte> > blockBuffer;
+        std::list< std::vector<unsigned char> > blockBuffer;
     };
 
     template<typename T>

@@ -121,3 +121,60 @@ TEST(PacketType_toPackeType, Location) {
 TEST(PacketType_toPackeType, UndefinedType) {
     EXPECT_EQ(PacketType::toPacketType(50), PacketType::UNDEFINED);
 }
+
+
+TEST(PacketType_toString, Open) {
+    EXPECT_EQ(PacketType::toString(PacketType::OPEN), "OPEN");
+}
+TEST(PacketType_toString, Close) {
+    EXPECT_EQ(PacketType::toString(PacketType::CLOSE), "CLOSE");
+}
+TEST(PacketType_toString, AckOK) {
+    EXPECT_EQ(PacketType::toString(PacketType::ACK_OK), "ACK_OK");
+}
+TEST(PacketType_toString, AckErr) {
+    EXPECT_EQ(PacketType::toString(PacketType::ACK_ERR), "ACK_ERR");
+}
+TEST(PacketType_toString, Alive) {
+    EXPECT_EQ(PacketType::toString(PacketType::ALIVE), "ALIVE");
+}
+
+
+TEST(PacketType_toString, OpenEncr) {
+    EXPECT_EQ(PacketType::toString(PacketType::OPEN_ENCR), "OPEN_ENCR");
+}
+TEST(PacketType_toString, PublicKey) {
+    EXPECT_EQ(PacketType::toString(PacketType::PUBLIC_KEY), "PUBLIC_KEY");
+}
+TEST(PacketType_toString, SymmetriKey) {
+    EXPECT_EQ(PacketType::toString(PacketType::SYMMETRIC_KEY), "SYMMETRIC_KEY");
+}
+TEST(PacketType_toString, TestKey) {
+    EXPECT_EQ(PacketType::toString(PacketType::TEST_KEY), "TEST_KEY");
+}
+
+
+TEST(PacketType_toString, OpenProt) {
+    EXPECT_EQ(PacketType::toString(PacketType::OPEN_PROT), "OPEN_PROT");
+}
+TEST(PacketType_toString, SetName) {
+    EXPECT_EQ(PacketType::toString(PacketType::SET_NAME), "SET_NAME");
+}
+TEST(PacketType_toString, AddFollower) {
+    EXPECT_EQ(PacketType::toString(PacketType::ADD_FOLLOWER), "ADD_FOLLOWER");
+}
+TEST(PacketType_toString, NewFollowed) {
+    EXPECT_EQ(PacketType::toString(PacketType::NEW_FOLLOWED), "NEW_FOLLOWED");
+}
+TEST(PacketType_toString, RemoveFollower) {
+    EXPECT_EQ(PacketType::toString(PacketType::REMOVE_FOLLOWER), "REMOVE_FOLLOWER");
+}
+TEST(PacketType_toString, RemoveFollowed) {
+    EXPECT_EQ(PacketType::toString(PacketType::REMOVE_FOLLOWED), "REMOVE_FOLLOWED");
+}
+TEST(PacketType_toString, MyLocation) {
+    EXPECT_EQ(PacketType::toString(PacketType::MY_LOCATION), "MY_LOCATION");
+}
+TEST(PacketType_toString, Location) {
+    EXPECT_EQ(PacketType::toString(PacketType::LOCATION), "LOCATION");
+}

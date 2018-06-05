@@ -13,7 +13,7 @@ PipeBuffer::PipeBuffer() {
 }
 
 void PipeBuffer::pushByteToPipe() const {
-    // std::byte ?
+    // unsigned char ?
     if (write(pipeWriteFd, "1", sizeof "1"[0]) == -1) {
         throw std::system_error(errno, std::generic_category());
     }

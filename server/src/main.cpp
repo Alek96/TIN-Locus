@@ -1,5 +1,8 @@
 #include <iostream>
 #include <thread>
+#include <string>
+#include "log/Logger.h"
+#include "database/Database.h"
 #include "server/Receiver.h"
 #include "server/Sender.h"
 #include "server/Server.h"
@@ -11,6 +14,9 @@ using namespace message;
 const uint16_t PORT = 5050;
 
 int main() {
+//    Log::Logger::getInstance().setShouldShowDebug(false);
+    Database::getInstance();
+
     Server server;
     std::thread serverThread([&server] { server(); });
 
@@ -34,8 +40,25 @@ int main() {
         receiver.getBlockingQueue().push(std::move(msg));
     }
 
+    while (std::cin.peek()) {
+        std::string commend;
+        std::cin >> commend;
+        if(commend == "closeAll") {
+            break;
+        } else if(commend == "close") {
+            int nr = 0;
+            std::cin >> nr;
+            {
+                Message msg(Message::EraseClient);
+                msg.fileDescriptor = std::make_unique<int>(nr);
+                clientManager.getBlockingQueue().priorityPush(std::move(msg));
+            }
+        } else {
+            std::cout << "Commend not recognised: " << commend << std::endl;
+        }
+    }
 
-    std::cin.get();
+
     {
         Message msg = Message(Message::Close);
         sender.getBlockingQueue().push(std::move(msg));

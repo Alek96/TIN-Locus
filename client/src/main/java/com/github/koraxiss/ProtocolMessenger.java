@@ -1,4 +1,4 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class ProtocolMessenger implements Messenger {
         send(buffer, buffer.length);
     }
 
-    public Packet receive(byte[] buffer) throws IOException {
+    public Packet receive(byte[] buffer) throws Exception {
         Packet packet = encryptedMessenger.receive(buffer);
         if (packet == null)
             return null;
@@ -31,6 +31,8 @@ public class ProtocolMessenger implements Messenger {
             return packet;
         int size = packet.getSize();
         int type = Converter.byteToInt(buffer[0]);
+        System.out.println((int)buffer[0]);
+        System.out.println("Received packet " + PacketType.packetTypeMap.get(type));
         PacketType packetType = PacketType.packetTypeMap.get(type);
         switch (packetType) {
             case _OPEN_PROT:
@@ -96,7 +98,7 @@ public class ProtocolMessenger implements Messenger {
             case _ALIVE:
                 return new Packet(PacketType._ALIVE);
             default:
-                return null;
+                throw new Exception("Wrong packet");
         }
     }
 }

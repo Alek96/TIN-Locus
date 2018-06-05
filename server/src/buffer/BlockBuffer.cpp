@@ -1,7 +1,7 @@
 #include "BlockBuffer.h"
 
 
-namespace packet {
+namespace buffer {
 
     const size_t BlockBuffer::size() const {
         return blockBuffer.size();
@@ -11,15 +11,15 @@ namespace packet {
         return blockBuffer.front().size();
     }
 
-    void BlockBuffer::push(const std::vector<std::byte> &bytes) {
+    void BlockBuffer::push(const std::vector<unsigned char> &bytes) {
         blockBuffer.push_back(bytes);
     }
 
-    void BlockBuffer::push(std::vector<std::byte> &&bytes) {
+    void BlockBuffer::push(std::vector<unsigned char> &&bytes) {
         blockBuffer.push_back(std::move(bytes));
     }
 
-    std::vector<std::byte> BlockBuffer::pop() {
+    std::vector<unsigned char> BlockBuffer::pop() {
         if(blockBuffer.empty()) {
             throw std::runtime_error("BlockBuffer is Empty");
 
@@ -29,11 +29,11 @@ namespace packet {
         return result;
     }
 
-    std::list< std::vector<std::byte> > &BlockBuffer::operator*() {
+    std::list< std::vector<unsigned char> > &BlockBuffer::operator*() {
         return blockBuffer;
     }
 
-    const std::list<std::vector<std::byte> > &BlockBuffer::operator*() const {
+    const std::list<std::vector<unsigned char> > &BlockBuffer::operator*() const {
         return blockBuffer;
     }
 

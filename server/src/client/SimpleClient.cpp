@@ -1,7 +1,7 @@
 #include "SimpleClient.h"
 #include "log/Logger.h"
 
-using namespace log;
+using namespace Log;
 using namespace message;
 using namespace std::chrono_literals;
 
@@ -15,9 +15,7 @@ SimpleClient::SimpleClient(const sockaddr &client_addr, std::unique_ptr<ClientBu
 //  set clientBuffer blockingQueue for return
     this->clientBuffer->setClientBlockingQueue(&getBlockingQueue());
 
-    Logger::getInstance().logMessage("SimpleClient " + std::to_string(getConnectionFD()) + ": Created");
-
-    upgrade();
+    Logger::getInstance().logDebug("SimpleClient " + std::to_string(getConnectionFD()) + ": Created");
 }
 
 SimpleClient::~SimpleClient() {
@@ -39,31 +37,28 @@ void SimpleClient::recv() {
             closeConnection();
             break;
 
-        case Message::PacketSend:
-            Logger::getInstance().logMessage(
-                    "SimpleClient " + std::to_string(getConnectionFD()) + ": Get PacketSend message");
-            break;
-
-        case Message::PacketReceive:
-            Logger::getInstance().logMessage(
-                    "SimpleClient " + std::to_string(getConnectionFD()) + ": Get PacketReceive message");
-            break;
-
         default:
             Logger::getInstance().logDebug("SimpleClient: Get unexpected message: " + msg.toString());
     }
 }
 
-void SimpleClient::sendData(const std::vector<std::byte> &bytes) {
-    clientBuffer->getBufferOut().push_back(const_cast<std::vector<std::byte> &>(bytes));
+void SimpleClient::sendData(const std::vector<unsigned char> &bytes) {
+    clientBuffer->getBufferOut().push_back(const_cast<std::vector<unsigned char> &>(bytes));
     clientBuffer->getBufferOut().setStage(BlockingBuffer::Stage::Full);
     //notify sender
     clientBuffer->send();
 }
 
-std::vector<std::byte> SimpleClient::recvData() {
-    clientBuffer->getBufferOut().setStage(BlockingBuffer::Stage::Empty);
-    return clientBuffer->getBufferOut().pop(clientBuffer->getBufferOut().size());
+std::vector<unsigned char> SimpleClient::recvData() {
+    Logger::getInstance().logDebug("SimpleClient: Try pop clientBuffer: " +
+                                   std::to_string(clientBuffer->getBufferIn().size()));
+
+    auto bytes = clientBuffer->getBufferIn().pop(clientBuffer->getBufferIn().size());
+
+    Logger::getInstance().logDebug("SimpleClient: Receive bytes: " + std::to_string(bytes.size()));
+
+    clientBuffer->getBufferIn().setStage(BlockingBuffer::Stage::Empty);
+    return bytes;
 }
 
 const sockaddr &SimpleClient::getClient_addr() const {
@@ -79,6 +74,9 @@ message::BlockingQueue<message::Message> &SimpleClient::getBlockingQueue() {
 }
 
 void SimpleClient::closeConnection() {
+    Logger::getInstance().logError("SimpleClient " + std::to_string(getConnectionFD()) +
+                                   ": Closing connection");
+
     Message msg(Message::EraseClient);
     msg.fileDescriptor = std::make_unique<int>(clientBuffer->getFileDescriptor());
     clientManagerBlockingQueue->priorityPush(std::move(msg));
@@ -86,10 +84,4 @@ void SimpleClient::closeConnection() {
 
 message::BlockingQueue<message::Message> &SimpleClient::getClientManagerBlockingQueue() {
     return *clientManagerBlockingQueue;
-}
-
-void SimpleClient::upgrade() {
-    Message msg(Message::UpgradeClientWithEncryption);
-    msg.fileDescriptor = std::make_unique<int>(getConnectionFD());
-    getClientManagerBlockingQueue().push(std::move(msg));
 }

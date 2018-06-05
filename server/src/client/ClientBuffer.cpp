@@ -6,8 +6,9 @@
 #include "log/Logger.h"
 #include "buffer/Converter.h"
 
-using namespace log;
+using namespace Log;
 using namespace packet;
+using namespace buffer;
 using namespace message;
 
 ClientBuffer::ClientBuffer(const int &port) {
@@ -26,13 +27,14 @@ BlockingBuffer &ClientBuffer::getBufferOut() {
     return bufferOut;
 }
 
-std::vector<std::byte> ClientBuffer::recv(const size_t &n) const {
-    std::vector<std::byte> buffer(n);
+std::vector<unsigned char> ClientBuffer::recv(const size_t &n) const {
+    Logger::getInstance().logDebug("ClientBuffer: try to receive " + std::to_string(n) + " bytes.");
+    std::vector<unsigned char> buffer(n);
     size_t remaining = n;
 
     while (!isClose() && remaining) {
         buffer.resize(remaining);
-        ssize_t count = ::recv(getFileDescriptor(), buffer.data() + n - remaining, sizeof(std::byte) * remaining, 0);
+        ssize_t count = ::recv(getFileDescriptor(), buffer.data() + n - remaining, sizeof(unsigned char) * remaining, 0);
 
         if (count < 0) {
             // if errno is EAGAIN or EWOULDBLOCK, that means we have receive all data.
@@ -58,17 +60,18 @@ std::vector<std::byte> ClientBuffer::recv(const size_t &n) const {
     }
 
     buffer.resize(n - remaining);
-    return isClose() ? std::vector<std::byte>() : buffer;
+    return isClose() ? std::vector<unsigned char>() : buffer;
 }
 
 void ClientBuffer::recv() {
 
     //get size of upcoming packet
     if (!isClose() && bufferIn.getStage() == BlockingBuffer::Stage::Empty) {
-        auto buffer = recv(1);
+        auto buffer = recv(2);
         if (!buffer.empty()) {
-            uint8_t size = 0;
+            uint16_t size = 0;
             from_bytes(buffer, size);
+            Logger::getInstance().logDebug("ClientBuffer: new packet will have " + std::to_string(size) + " bytes.");
             bufferIn.setMaxSize(size);
             bufferIn.setStage(BlockingBuffer::Stage::Receiving);
         }
@@ -80,6 +83,7 @@ void ClientBuffer::recv() {
         if (!buffer.empty()) {
             bufferIn.push_back(std::move(buffer));
             if (bufferIn.remainingSize() == 0) {
+                Logger::getInstance().logDebug("ClientBuffer: new packet have " + std::to_string(bufferIn.size()) + " bytes.");
                 bufferIn.setStage(BlockingBuffer::Stage::Full);
                 //notify client
                 if(clientBlockingQueue) {
@@ -95,12 +99,12 @@ void ClientBuffer::recv() {
     }
 }
 
-std::vector<std::byte> ClientBuffer::send(std::vector<std::byte> buffer) const {
+std::vector<unsigned char> ClientBuffer::send(std::vector<unsigned char> buffer) const {
     Logger::getInstance().logDebug("ClientBuffer: try to send " + std::to_string(buffer.size()) + " bytes.");
 
     const auto firstSize = buffer.size();
     if (!isClose() && !buffer.empty()) {
-        ssize_t count = ::send(getFileDescriptor(), buffer.data(), sizeof(std::byte) * buffer.size(), 0);
+        ssize_t count = ::send(getFileDescriptor(), buffer.data(), sizeof(unsigned char) * buffer.size(), 0);
         if (count < 0) {
             // if errno is EAGAIN or EWOULDBLOCK, that means we have send all data.
             if (errno != EAGAIN && errno != EWOULDBLOCK) {
@@ -125,7 +129,7 @@ std::vector<std::byte> ClientBuffer::send(std::vector<std::byte> buffer) const {
 void ClientBuffer::send() {
     //set size of sending packet
     if (!isClose() && bufferOut.getStage() == BlockingBuffer::Stage::Full) {
-        const auto size = static_cast<uint8_t>(bufferOut.size());
+        const auto size = static_cast<uint16_t>(bufferOut.size());
         bufferOut.push_front(to_bytes(size));
         bufferOut.setMaxSize(bufferOut.size());
         bufferOut.setStage(BlockingBuffer::Stage::Sending);

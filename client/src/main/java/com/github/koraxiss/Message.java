@@ -1,4 +1,4 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 public class Message {
     private MessageType type;

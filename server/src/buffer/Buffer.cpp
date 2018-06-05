@@ -30,23 +30,23 @@ void Buffer::setStage(const Buffer::Stage &stage) {
     Buffer::stage = stage;
 }
 
-std::vector<std::byte> Buffer::pop() {
+std::vector<unsigned char> Buffer::pop() {
     if (!size()) {
         throw std::runtime_error("The BlockingBuffer is Empty");
     }
 
-    std::vector<std::byte> bytes = std::move(buffer.front());
+    std::vector<unsigned char> bytes = std::move(buffer.front());
     buffer.pop_front();
     bufferSize -= bytes.size();
     return std::move(bytes);
 }
 
-std::vector<std::byte> Buffer::pop(const size_t &n) {
+std::vector<unsigned char> Buffer::pop(const size_t &n) {
     if (n > size()) {
         throw std::runtime_error("The BlockingBuffer has too small number of bytes");
     }
 
-    std::vector<std::byte> returnBuffer(n);
+    std::vector<unsigned char> returnBuffer(n);
     auto itRetBuffer = returnBuffer.begin();
     size_t left = n;
 
@@ -74,4 +74,8 @@ std::vector<std::byte> Buffer::pop(const size_t &n) {
 
 const size_t Buffer::frontSize() const {
     return buffer.front().size();
+}
+
+std::vector<unsigned char> Buffer::popAll() {
+    return pop(size());
 }

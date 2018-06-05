@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Petarda</string>
+    <string name="edit_nickname">Enter a nickname</string>
+    <string name="button_send">Send</string>
+    <string name="to_list">To List Activity</string>
+    <string name="add_follower">Add Follower</string>
+    <string name="remove_follower">Remove Follower</string>
+    <string name="unfollow">Unfollow</string>
 </resources>

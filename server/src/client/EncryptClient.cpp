@@ -1,14 +1,14 @@
 #include "EncryptClient.h"
 #include "log/Logger.h"
 
-using namespace log;
+using namespace Log;
 using namespace message;
 using namespace std::chrono_literals;
 
 EncryptClient::EncryptClient(std::unique_ptr<Client> &&client)
         : DecoratorClient(std::move(client)) {
 
-    Logger::getInstance().logMessage("EncryptClient " + std::to_string(getConnectionFD()) + ": Created");
+    Logger::getInstance().logDebug("EncryptClient " + std::to_string(getConnectionFD()) + ": Created");
 }
 
 void EncryptClient::recv() {
@@ -26,27 +26,22 @@ void EncryptClient::recv() {
             closeConnection();
             break;
 
-        case Message::PacketSend:
-            Logger::getInstance().logMessage(
-                    "EncryptClient " + std::to_string(getConnectionFD()) + ": Get PacketSend message");
-            break;
-
-        case Message::PacketReceive:
-            Logger::getInstance().logMessage(
-                    "EncryptClient " + std::to_string(getConnectionFD()) + ": Get PacketReceive message");
-            break;
-
         default:
             Logger::getInstance().logDebug("EncryptClient: Get unexpected message: " + msg.toString());
     }
 }
 
-void EncryptClient::sendData(const std::vector<std::byte> &bytes) {
-    //szyfruj
-    client->sendData(bytes);
+void EncryptClient::sendData(const std::vector<unsigned char> &bytes) {
+    client->sendData(cryptoModule.encrypt(bytes));
 }
 
-std::vector<std::byte> EncryptClient::recvData() {
-    //deszyfruj
-    return client->recvData();
+std::vector<unsigned char> EncryptClient::recvData() {
+    auto bytes = client->recvData();
+    Logger::getInstance().logDebug("EncryptClient: Receive bytes: " + std::to_string(bytes.size()));
+
+    return cryptoModule.decrypt(bytes);
+}
+
+crypto::CryptoModule &EncryptClient::getCryptoModule() {
+    return cryptoModule;
 }

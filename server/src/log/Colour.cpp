@@ -11,7 +11,7 @@
 #define LOG_CONFIG_TERMINAL_COLORS true
 #endif
 
-namespace log {
+namespace Log {
 namespace {
 
     struct IColourImpl {
@@ -30,7 +30,7 @@ namespace {
     };
 
 } // end anon namespace
-} // end log namespace
+} // end Log namespace
 
 #if !defined( LOG_CONFIG_COLOUR_NONE ) && !defined( LOG_CONFIG_COLOUR_WINDOWS ) && !defined( LOG_CONFIG_COLOUR_ANSI )
 #   ifdef LOG_PLATFORM_WINDOWS
@@ -43,7 +43,7 @@ namespace {
 
 #if defined ( LOG_CONFIG_COLOUR_WINDOWS ) /////////////////////////////////////////
 
-namespace log {
+namespace Log {
 namespace {
 
     class Win32ColourImpl : public IColourImpl {
@@ -95,11 +95,11 @@ namespace {
     }
 
 } // end anon namespace
-} // end log namespace
+} // end Log namespace
 
 #elif defined( LOG_CONFIG_COLOUR_ANSI ) //////////////////////////////////////
 
-namespace log {
+namespace Log {
 namespace {
 
     // use POSIX/ ANSI console terminal codes
@@ -157,17 +157,17 @@ namespace {
     }
 
 } // end anon namespace
-} // end log namespace
+} // end Log namespace
 
 #else  // not Windows or ANSI ///////////////////////////////////////////////
 
-namespace log {
+namespace Log {
     static IColourImpl* platformColourInstance() { return NoColourImpl::instance(); }
-} // end log namespace
+} // end Log namespace
 
 #endif // Windows/ ANSI/ None
 
-namespace log {
+namespace Log {
 
     Colour::Colour(Code _colourCode) { use(_colourCode); }
 
@@ -193,4 +193,4 @@ namespace log {
         return os;
     }
 
-} // end log namespace
+} // end Log namespace

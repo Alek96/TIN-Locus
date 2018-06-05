@@ -19,13 +19,3 @@ TEST(Packet_getType, Alive) {
     Packet packet(PacketType::ALIVE);
     EXPECT_EQ(packet.getType(), PacketType::ALIVE);
 }
-
-TEST(Packet_getTypeSize, Open) {
-    Packet packet(PacketType::OPEN);
-    EXPECT_EQ(packet.getTypeSize(), 1);
-}
-
-TEST(Packet_getBuffer, returnBuffer) {
-    Packet packet(PacketType::OPEN);
-    EXPECT_EQ(packet.getBuffer(), BlockBuffer());
-}

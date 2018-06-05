@@ -1,4 +1,7 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
+
+import java.security.Key;
+import java.security.PublicKey;
 
 public class Packet {
     private PacketType type;
@@ -57,9 +60,9 @@ public class Packet {
     }
 
     private byte[] bufferEncryptedPacket() {
-        byte[] bytes = new byte[1 + ((String) arg1).length()];
+        byte[] bytes = new byte[1 + ((byte[])arg1).length];
         bytes[0] = Converter.intToByte(PacketType.reversedMap.get(type));
-        byte[] string = Converter.stringToByte((String) arg1);
+        byte[] string = (byte[]) arg1;
         System.arraycopy(string, 0, bytes, 1, string.length);
         return bytes;
     }

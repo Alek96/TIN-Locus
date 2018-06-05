@@ -31,4 +31,30 @@ namespace packet {
 
         return packetTypeMap.count(header) ? packetTypeMap.at(header) : PacketType::header::UNDEFINED;
     }
+
+    std::string PacketType::toString(PacketType::header header) {
+        static std::unordered_map<PacketType::header, std::string> packetTypeMap = {
+                {PacketType::header::OPEN,            "OPEN"},
+                {PacketType::header::CLOSE,           "CLOSE"},
+                {PacketType::header::ACK_OK,          "ACK_OK"},
+                {PacketType::header::ACK_ERR,         "ACK_ERR"},
+                {PacketType::header::ALIVE,           "ALIVE"},
+
+                {PacketType::header::OPEN_ENCR,       "OPEN_ENCR"},
+                {PacketType::header::PUBLIC_KEY,      "PUBLIC_KEY"},
+                {PacketType::header::SYMMETRIC_KEY,   "SYMMETRIC_KEY"},
+                {PacketType::header::TEST_KEY,        "TEST_KEY"},
+
+                {PacketType::header::OPEN_PROT,       "OPEN_PROT"},
+                {PacketType::header::SET_NAME,        "SET_NAME"},
+                {PacketType::header::ADD_FOLLOWER,    "ADD_FOLLOWER"},
+                {PacketType::header::NEW_FOLLOWED,    "NEW_FOLLOWED"},
+                {PacketType::header::REMOVE_FOLLOWER, "REMOVE_FOLLOWER"},
+                {PacketType::header::REMOVE_FOLLOWED, "REMOVE_FOLLOWED"},
+                {PacketType::header::MY_LOCATION,     "MY_LOCATION"},
+                {PacketType::header::LOCATION,        "LOCATION"},
+        };
+
+        return packetTypeMap.count(header) ? packetTypeMap.at(header) : "UNDEFINED";
+    }
 }

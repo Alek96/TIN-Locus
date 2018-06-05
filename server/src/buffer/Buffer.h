@@ -37,12 +37,14 @@ public:
     template<typename T>
     void push_back(T &&bytes);
 
-    virtual std::vector<std::byte> pop();
+    virtual std::vector<unsigned char> pop();
 
-    virtual std::vector<std::byte> pop(const size_t &n);
+    virtual std::vector<unsigned char> pop(const size_t &n);
+    
+    virtual std::vector<unsigned char> popAll();
 
 private:
-    std::list<std::vector<std::byte> > buffer;
+    std::list<std::vector<unsigned char> > buffer;
     size_t bufferMaxSize = 0;
     size_t bufferSize = 0;
     Stage stage = Stage::Empty;
@@ -52,17 +54,17 @@ private:
 
 template<typename T>
 void Buffer::push_front(T &&bytes) {
-    static_assert(std::is_same<std::vector<std::byte>, typename std::remove_reference<T>::type>::value,
-                  "Parameter in push_front must be std::vector<std::byte> type");
+    static_assert(std::is_same<std::vector<unsigned char>, typename std::remove_reference<T>::type>::value,
+                  "Parameter in push_front must be std::vector<unsigned char> type");
 
     bufferSize += bytes.size();
-    buffer.push_front(std::forward<std::vector<std::byte> >(bytes));
+    buffer.push_front(std::forward<std::vector<unsigned char> >(bytes));
 }
 
 template<typename T>
 void Buffer::push_back(T &&bytes) {
-    static_assert(std::is_same<std::vector<std::byte>, typename std::remove_reference<T>::type>::value,
-                  "Parameter in push_back must be std::vector<std::byte> type");
+    static_assert(std::is_same<std::vector<unsigned char>, typename std::remove_reference<T>::type>::value,
+                  "Parameter in push_back must be std::vector<unsigned char> type");
 
     bufferSize += bytes.size();
     buffer.push_back(std::forward<T>(bytes));

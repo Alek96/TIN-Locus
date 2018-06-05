@@ -1,9 +1,11 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -14,7 +16,7 @@ public class CipherModule {
     private static KeyPairGenerator keyPairGenerator;
     private static KeyPair keyPair;
     private static Key serverPublicKey;
-    private static Key sessionKey;
+    private static SecretKey sessionKey;
 
     private static Cipher encryptClientPrivate;
     private static Cipher decryptClientPrivate;
@@ -31,6 +33,10 @@ public class CipherModule {
         SERVER_PUBLIC,
         CLIENT_PRIVATE_SERVER_PUBLIC,
         SESSION
+    }
+
+    static KeyPair getKeyPair() {
+        return keyPair;
     }
 
     static KeyPair generateKeyPair() throws NoSuchAlgorithmException, IOException {
@@ -92,36 +98,46 @@ public class CipherModule {
         System.out.println(keyPair.getPrivate().toString());
     }
 
-    static void loadServerPublic(){
+    static void loadServerPublic() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        FileInputStream publicKeyFIS = new FileInputStream("key/server_public");
+        byte[] serverPublicBytes = new byte[publicKeyFIS.available()];
 
+        publicKeyFIS.read(serverPublicBytes);
+        publicKeyFIS.close();
+
+        X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(serverPublicBytes);
+        KeyFactory pubKeyFactory = KeyFactory.getInstance("RSA");
+        serverPublicKey = pubKeyFactory.generatePublic(pubKeySpec);
     }
 
-    static void loadSessionKey(){
-
+    static void setSessionKey(byte[] key){
+        sessionKey = new SecretKeySpec(key, "AES");
     }
 
-    static void initializeClientCiphers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        encryptClientPrivate = Cipher.getInstance("RSA");
-        decryptClientPrivate = Cipher.getInstance("RSA");
+    static void initializeClientCiphers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, InvalidKeySpecException {
+        loadKeyPair();
+        encryptClientPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        decryptClientPrivate = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
         encryptClientPrivate.init(Cipher.ENCRYPT_MODE, keyPair.getPrivate());
         decryptClientPrivate.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
     }
 
-    static void initializeServerCiphers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        encryptServerPublic = Cipher.getInstance("RSA");
-        decryptServerPublic = Cipher.getInstance("RSA");
+    static void initializeServerCiphers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, InvalidKeySpecException {
+        loadServerPublic();
+        encryptServerPublic = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        decryptServerPublic = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
         encryptServerPublic.init(Cipher.ENCRYPT_MODE, serverPublicKey);
         decryptServerPublic.init(Cipher.DECRYPT_MODE, serverPublicKey);
     }
 
     static void initializeSessionCiphers() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        encryptSession = Cipher.getInstance("AES");
-        decryptSession = Cipher.getInstance("AES");
+        encryptSession = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        decryptSession = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
         encryptSession.init(Cipher.ENCRYPT_MODE, sessionKey);
-        encryptSession.init(Cipher.ENCRYPT_MODE, sessionKey);
+        decryptSession.init(Cipher.DECRYPT_MODE, sessionKey);
     }
 
 
@@ -130,8 +146,8 @@ public class CipherModule {
             case SERVER_PUBLIC:
                 return encryptServerPublic.doFinal(buffer, offset, n);
             case CLIENT_PRIVATE_SERVER_PUBLIC:
-                byte[] temp = encryptClientPrivate.doFinal(buffer, offset, n);
-                return encryptServerPublic.doFinal(temp);
+//                byte[] temp = encryptClientPrivate.doFinal(buffer, offset, n);
+                return encryptServerPublic.doFinal(buffer, offset, n);
             case SESSION:
                 return encryptSession.doFinal(buffer, offset, n);
             default:
@@ -142,10 +158,10 @@ public class CipherModule {
     static byte[] decrypt(byte[] buffer, int offset, int n) throws BadPaddingException, IllegalBlockSizeException {
         switch (state){
             case CLIENT_PRIVATE_SERVER_PUBLIC:
-                byte[] temp = decryptClientPrivate.doFinal(buffer, offset, n);
-                return decryptServerPublic.doFinal(temp);
+                return decryptClientPrivate.doFinal(buffer, offset, n);
+//                return decryptServerPublic.doFinal(temp);
             case SESSION:
-                return encryptSession.doFinal(buffer, offset, n);
+                return decryptSession.doFinal(buffer, offset, n);
             default:
                 throw new RuntimeException("CipherModule state not known.");
         }

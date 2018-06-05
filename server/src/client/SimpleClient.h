@@ -21,8 +21,8 @@ public:
     void recv() override;
     void send() override {}
 
-    void sendData(const std::vector<std::byte> &bytes) override;
-    std::vector<std::byte> recvData() override;
+    void sendData(const std::vector<unsigned char> &bytes) override;
+    std::vector<unsigned char> recvData() override;
 
     const sockaddr &getClient_addr() const override;
 
@@ -39,8 +39,6 @@ private:
     std::unique_ptr<ClientBuffer> clientBuffer;
     message::BlockingQueue<message::Message> blockingQueue;
     message::BlockingQueue<message::Message> *clientManagerBlockingQueue;
-
-    void upgrade();
 };
 
 

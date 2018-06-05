@@ -1,4 +1,7 @@
 #include "Packet.h"
+#include "buffer/Converter.h"
+
+using namespace buffer;
 
 namespace packet {
 
@@ -14,5 +17,16 @@ namespace packet {
 
     const Buffer &Packet::getBuffer() const {
         return buffer;
+    }
+
+    void Packet::addTypeToBuffer() {
+        buffer.push_front(to_bytes(PacketType::toUInt8(type)));
+    }
+
+    void Packet::parse() {
+        auto headerBuffer = buffer.pop(1);
+        uint8_t headerId;
+        from_bytes(headerBuffer, headerId);
+        type = PacketType::toPacketType(headerId);
     }
 }

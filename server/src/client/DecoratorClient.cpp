@@ -1,7 +1,7 @@
 #include "DecoratorClient.h"
 #include "log/Logger.h"
 
-using namespace log;
+using namespace Log;
 using namespace message;
 
 DecoratorClient::DecoratorClient(std::unique_ptr<Client> &&client)

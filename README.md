@@ -5,15 +5,5 @@ Projekt wykonany w ramach przedmiotu TIN (Techniki Internetowe), na kierunku Inf
 ### Opis projektu
 Projekt ma na celu ...  
 
-### Submodules  
-Projekt zawiera w sobie inne repozytorium (googltest) i zwykły clone go nie pobiera.  
-Można to zrobić na dwa sposoby:  
-1. 
-```
-git clone <url>
-git submodule init
-git submodule update
-```
-2. 
-`git clone --recurse-submodules <url>`
-
+### Server
+Instala i uruchomienie zostały opisane w README.md znajdującym się w katalogu server.
