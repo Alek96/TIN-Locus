@@ -13,6 +13,10 @@ void ClientData::setName(const std::string &name) {
 
 void ClientData::addPosition(const float &latitude, const float &longitude, const time_t &time) {
     positions.emplace_back(Position(latitude, longitude, time));
+    
+    if(positions.size() > 10) {
+        positions.pop_front();
+    }
 }
 
 void ClientData::addFollower(const short &id) {
@@ -24,11 +28,11 @@ void ClientData::removeFollower(const short &id) {
 }
 
 void ClientData::startFollowing(const short &id) {
-    following.emplace_back(Watcher(id));
+    following.emplace_back(Following(id));
 }
 
 void ClientData::stopFollowing(const short &id) {
-    following.remove_if([&id](Watcher &w) { return w.id == id; });
+    following.remove_if([&id](Following &w) { return w.id == id; });
 }
 
 std::vector<unsigned char> ClientData::getPublicKey() const {

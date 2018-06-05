@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../Watcher.h"
+#include "database/Following.h"
 
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
@@ -12,16 +12,16 @@ using namespace std;
 using namespace cereal;
 
 TEST(Watcher_Constructor, Initialize) {
-    EXPECT_NO_THROW(Watcher());
-    EXPECT_NO_THROW(Watcher(0));
+    EXPECT_NO_THROW(Following());
+    EXPECT_NO_THROW(Following(0));
 
-    Watcher watcher(1);
-    EXPECT_EQ(watcher, Watcher(1));
+    Following watcher(1);
+    EXPECT_EQ(watcher, Following(1));
 }
 
 
 TEST(Watcher_Serialize, JSON) {
-    Watcher watcher(1);
+    Following watcher(1);
 
     stringstream ss;
     JSONOutputArchive oarchive(ss);
@@ -34,8 +34,8 @@ TEST(Watcher_Serialize, JSON) {
 
 TEST(Watcher_Deserialize, JSON) {
     stringstream ss;
-    Watcher oWatcher(1);
-    Watcher iWatcher;
+    Following oWatcher(1);
+    Following iWatcher;
     {
         JSONOutputArchive oarchive(ss);
         oarchive(oWatcher);
@@ -48,7 +48,7 @@ TEST(Watcher_Deserialize, JSON) {
 }
 
 TEST(Watcher_Serialize, Binary) {
-    Watcher watcher(1);
+    Following watcher(1);
 
     stringstream ss;
     BinaryOutputArchive oarchive(ss);
@@ -61,8 +61,8 @@ TEST(Watcher_Serialize, Binary) {
 
 TEST(Watcher_Deserialize, Binary) {
     stringstream ss;
-    Watcher oWatcher(1);
-    Watcher iWatcher;
+    Following oWatcher(1);
+    Following iWatcher;
     {
         BinaryOutputArchive oarchive(ss);
         oarchive(oWatcher);
@@ -75,7 +75,7 @@ TEST(Watcher_Deserialize, Binary) {
 }
 
 TEST(Watcher_Serialize, PortableBinary) {
-    Watcher watcher(1);
+    Following watcher(1);
 
     stringstream ss;
     PortableBinaryOutputArchive oarchive(ss);
@@ -88,8 +88,8 @@ TEST(Watcher_Serialize, PortableBinary) {
 
 TEST(Watcher_Deserialize, PortableBinary) {
     stringstream ss;
-    Watcher oWatcher(1);
-    Watcher iWatcher;
+    Following oWatcher(1);
+    Following iWatcher;
     {
         PortableBinaryOutputArchive oarchive(ss);
         oarchive(oWatcher);

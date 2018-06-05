@@ -4,7 +4,7 @@ include_directories(${gtest_SOURCE_DIR}/include &{gtest_SOURCE_DIR})
 
 add_executable(${PROJECT_NAME}
         Position_test.cpp
-        Watcher_test.cpp
+        Following_test.cpp
         ClientInfo_test.cpp
         ClientDataManager_test.cpp)
 

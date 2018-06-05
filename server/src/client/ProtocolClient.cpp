@@ -56,7 +56,7 @@ void ProtocolClient::recv() {
 
         case Message::Update:
             Logger::getInstance().logMessage(
-                    "ProtocolClient " + std::to_string(getConnectionFD()) + ": Get EraseObserver message");
+                    "ProtocolClient " + std::to_string(getConnectionFD()) + ": Get Update message");
             update();
             break;
 
@@ -94,8 +94,10 @@ void ProtocolClient::receiveData() {
             break;
         case Stage::TestKey:
             testKey();
+            break;
         case Stage::StableCommunication:
             stableCommunication();
+            break;
         case Stage::Exit:
             break;
     }
@@ -184,9 +186,9 @@ void ProtocolClient::setSymmetricKey() {
 
 void ProtocolClient::testKey() {
     try {
-        cryptoModule.use(CryptoModule::Algorithm::AES);
-        Logger::getInstance().logMessage("ProtocolClient " + std::to_string(getConnectionFD()) +
-                                         ": Set AES encryption");
+//        cryptoModule.use(CryptoModule::Algorithm::AES);
+//        Logger::getInstance().logMessage("ProtocolClient " + std::to_string(getConnectionFD()) +
+//                                         ": Set AES encryption");
         auto packet = recvPacket();
 
         if (packet.getType() == PacketType::TEST_KEY) {
@@ -301,7 +303,7 @@ void ProtocolClient::myLocation(packet::Packet &packet) {
 
         from_bytes(packet.getBuffer().pop(4), latitude);
         from_bytes(packet.getBuffer().pop(4), longitude);
-        from_bytes(packet.getBuffer().pop(4), deltaTime);
+        from_bytes(packet.getBuffer().pop(8), deltaTime);
         auto time = std::time(nullptr) - deltaTime;
 
         Database::getInstance().getClientDataManager().addPosition(id, latitude, longitude, time);
@@ -314,7 +316,7 @@ void ProtocolClient::update() {
         for (auto &name : names) {
             Packet newPacket(PacketType::NEW_FOLLOWED);
             newPacket.getBuffer().push_back(to_bytes(name.first));
-            newPacket.getBuffer().push_back(to_bytes(name.second));
+            newPacket.getBuffer().push_back(toByteVector(name.second));
 
             remainingPackets.push(newPacket);
         }
@@ -326,6 +328,12 @@ void ProtocolClient::update() {
             newPacket.getBuffer().push_back(to_bytes(position.second.latitude));
             newPacket.getBuffer().push_back(to_bytes(position.second.longitude));
             newPacket.getBuffer().push_back(to_bytes(position.second.time));
+
+            std::cout.setf(std::ios::fixed, std::ios::floatfield);
+            std::cout << position.second.latitude << std::endl;
+            std::cout << position.second.longitude << std::endl;
+            std::cout << position.second.time << std::endl;
+            std::cout << std::asctime(std::localtime(&position.second.time));
 
             remainingPackets.push(newPacket);
         }

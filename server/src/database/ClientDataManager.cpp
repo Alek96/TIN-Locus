@@ -137,6 +137,7 @@ std::list<std::pair<short, Position>> ClientDataManager::getNewPositions(const s
                 if (FollowingItPosition == followingItData.positions.begin()) {
                     break;
                 }
+                --FollowingItPosition;
             }
             followingIt.time = std::max(followingIt.time, newTime);
             positions.insert(positions.end(), newPositions.begin(), newPositions.end());
