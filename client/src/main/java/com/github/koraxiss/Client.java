@@ -1,6 +1,8 @@
 package main.java.com.github.koraxiss;
 
 import javax.crypto.NoSuchPaddingException;
+
+import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -22,7 +24,7 @@ public class Client implements Runnable{
     private final Object sendingLock;
     private final Object receivingLock;
 
-    public Client(BlockingQueue<Message> androidAppMessages, BlockingQueue<Message> childMessages) throws IOException {
+    public Client(BlockingQueue<Message> androidAppMessages, BlockingQueue<Message> childMessages, File fileDir) throws IOException {
         layerManager = new LayerManager();
         this.childMessages = childMessages;
         sendInstructions = new LinkedBlockingQueue<>();
@@ -33,6 +35,7 @@ public class Client implements Runnable{
         receiveNext = true;
         sendingLock = new Object();
         receivingLock = new Object();
+        CipherModule.setFileDir(fileDir);
     }
 
     @Override
@@ -102,6 +105,7 @@ public class Client implements Runnable{
                             break;
                         case _NEW_FOLLOWED:
                             androidAppMessages.put(message);
+                            break;
                         case _REMOVE_FOLLOWED:
                             Packet packet3 = message.getPacket();
                             sendInstructions.put(new Message(Message.MessageType.PACKET, packet3));
@@ -130,8 +134,8 @@ public class Client implements Runnable{
                     receivingLock.notify();
                 }
             } catch (InterruptedException | IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
+                e.printStackTrace();
                 stop();
-//                e.printStackTrace();
             }
         }
     }

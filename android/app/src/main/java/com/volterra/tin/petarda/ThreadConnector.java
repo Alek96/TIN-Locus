@@ -1,34 +1,44 @@
 package com.volterra.tin.petarda;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import main.java.com.github.koraxiss.Client;
 import main.java.com.github.koraxiss.Message;
 import main.java.com.github.koraxiss.Packet;
 import main.java.com.github.koraxiss.PacketType;
 
 public class ThreadConnector {
     private static Thread clientThread;
-    private static Thread transferThread;
+    private static Thread pollThread;
+    private static Thread sendThread;
     private static BlockingQueue<Message> readBlockingQueue;
     private static BlockingQueue<Message> writeBlockingQueue;
     private static HashMap<Short, String> nicknameMap;
 
-    public static void init() {
+    public static void init(File fileDir) {
         readBlockingQueue = new LinkedBlockingQueue<>();
         writeBlockingQueue = new LinkedBlockingQueue<>();
-        transferThread = new Thread(new TransferThread());
+        pollThread = new Thread(new PollThread());
+        sendThread = new Thread(new SendThread());
         nicknameMap = new HashMap<>();
 
-        /*try {
-            clientThread = new Thread(new Client(readBlockingQueue, writeBlockingQueue));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        clientThread.start();*/
-        transferThread.start();
+        Thread thread = new Thread(() -> {
+            try {
+                clientThread = new Thread(new Client(readBlockingQueue, writeBlockingQueue, fileDir));
+                clientThread.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
+        pollThread.start();
+        sendThread.start();
     }
 
     public static void poll(){
@@ -59,7 +69,7 @@ public class ThreadConnector {
             Packet packet = new Packet(PacketType._MY_LOCATION);
             packet.setArg1(random.nextFloat());
             packet.setArg2(random.nextFloat());
-            packet.setArg3(0);
+            packet.setArg3(0L);
             Message message = new Message(Message.MessageType.PACKET, packet);
 
             writeBlockingQueue.put(message);
@@ -85,5 +95,9 @@ public class ThreadConnector {
 
     public static BlockingQueue<Message> getWriteBlockingQueue() {
         return writeBlockingQueue;
+    }
+
+    public static String getNickname(Short s){
+        return nicknameMap.get(s);
     }
 }

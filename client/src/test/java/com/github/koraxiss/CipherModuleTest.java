@@ -1,4 +1,4 @@
-//package test.java.com.github.koraxiss;
+package test.java.com.github.koraxiss;
 //
 //import org.junit.Test;
 //import static org.junit.Assert.*;
@@ -38,3 +38,14 @@
 //        assertThat(CipherModule.loadKeyPair().getPrivate().toString()).isEqualTo(keyPair.getPrivate().toString());
 //    }
 //}
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+
+import main.java.com.github.koraxiss.CipherModule;
+
+public class CipherModuleTest {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+        CipherModule.generateKeyPair();
+    }
+}

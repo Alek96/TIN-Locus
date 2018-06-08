@@ -14,12 +14,16 @@ import main.java.com.github.koraxiss.PacketType;
 public class ConfigActivity extends AppCompatActivity {
     private static boolean canSetNickname = false;
     private static boolean nicknameWasSet = false;
+    private static boolean isInit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
-        ThreadConnector.init();
+        if (!isInit) {
+            ThreadConnector.init(getExternalFilesDir(null));
+            isInit = true;
+        }
     }
 
     public void sendNickname(View view) throws InterruptedException {

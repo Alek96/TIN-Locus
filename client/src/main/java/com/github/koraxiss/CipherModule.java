@@ -28,6 +28,11 @@ public class CipherModule {
     private static Cipher decryptSession;
 
     private static State state;
+    private static File fileDir;
+
+    public static void setFileDir(File fileDir) {
+        CipherModule.fileDir = fileDir;
+    }
 
     enum State{
         SERVER_PUBLIC,
@@ -39,7 +44,7 @@ public class CipherModule {
         return keyPair;
     }
 
-    static KeyPair generateKeyPair() throws NoSuchAlgorithmException, IOException {
+    public static KeyPair generateKeyPair() throws NoSuchAlgorithmException, IOException {
         keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(512);
         keyPair = keyPairGenerator.generateKeyPair();
@@ -50,8 +55,8 @@ public class CipherModule {
         File dir = new File("key");
         if(!dir.exists())   dir.mkdir();
 
-        File publicKeyFile = new File("key/public_key");
-        File privateKeyFile = new File("key/private_key");
+        File publicKeyFile = new File(fileDir + "/key/public_key");
+        File privateKeyFile = new File(fileDir + "/key/private_key");
 
         if(!publicKeyFile.exists())     publicKeyFile.createNewFile();
         if(!privateKeyFile.exists())    privateKeyFile.createNewFile();
@@ -69,8 +74,8 @@ public class CipherModule {
     }
 
     static KeyPair loadKeyPair() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        FileInputStream publicKeyFIS = new FileInputStream("key/public_key");
-        FileInputStream privateKeyFIS = new FileInputStream("key/private_key");
+        FileInputStream publicKeyFIS = new FileInputStream(fileDir.getPath() + "/key/public_key");
+        FileInputStream privateKeyFIS = new FileInputStream(fileDir + "/key/private_key");
 
         byte[] publicKeyBytes = new byte[publicKeyFIS.available()];
         byte[] privateKeyBytes = new byte[privateKeyFIS.available()];
@@ -99,7 +104,7 @@ public class CipherModule {
     }
 
     static void loadServerPublic() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        FileInputStream publicKeyFIS = new FileInputStream("key/server_public");
+        FileInputStream publicKeyFIS = new FileInputStream(fileDir +"/key/server_public");
         byte[] serverPublicBytes = new byte[publicKeyFIS.available()];
 
         publicKeyFIS.read(serverPublicBytes);
