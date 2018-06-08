@@ -1,4 +1,4 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import java.io.IOException;
 
@@ -76,16 +76,16 @@ public class ProtocolMessenger implements Messenger {
                 id1[1] = buffer[2];
                 short sId1 = Converter.byteToShort(id1);
                 packet3.setArg1(sId1);
-                byte[] lat = new byte[8];
-                System.arraycopy(buffer, 3, lat, 0, 8);
+                byte[] lat = new byte[4];
+                System.arraycopy(buffer, 3, lat, 0, 4);
                 float latitude = Converter.byteToFloat(lat);
                 packet3.setArg2(latitude);
-                byte[] lon = new byte[8];
-                System.arraycopy(buffer, 11, lon, 0, 8);
+                byte[] lon = new byte[4];
+                System.arraycopy(buffer, 7, lon, 0, 4);
                 float longitude = Converter.byteToFloat(lon);
                 packet3.setArg3(longitude);
                 byte[] t = new byte[8];
-                System.arraycopy(buffer, 19, t, 0, 8);
+                System.arraycopy(buffer, 11, t, 0, 8);
                 long time = Converter.byteToLong(t);
                 packet3.setArg4(time);
                 return packet3;

@@ -1,4 +1,4 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import java.security.Key;
 import java.security.PublicKey;
@@ -68,28 +68,28 @@ public class Packet {
     }
 
     private byte[] bufferLocation() {
-        byte[] bytes = new byte[27];
+        byte[] bytes = new byte[19];
         bytes[0] = Converter.intToByte(PacketType.reversedMap.get(type));
         byte[] shor = Converter.shortToByte((short) this.getArg1());
         System.arraycopy(shor, 0, bytes, 1, shor.length);
-        byte[] lat = Converter.floatToByte((long) this.getArg2());
+        byte[] lat = Converter.floatToByte((float) this.getArg2());
         System.arraycopy(lat, 0, bytes, 3, lat.length);
-        byte[] lon = Converter.floatToByte((long) this.getArg3());
-        System.arraycopy(lon, 0, bytes, 11, lon.length);
+        byte[] lon = Converter.floatToByte((float) this.getArg3());
+        System.arraycopy(lon, 0, bytes, 7, lon.length);
         byte[] t = Converter.longToByte((long) this.getArg4());
-        System.arraycopy(t, 0, bytes, 19, t.length);
+        System.arraycopy(t, 0, bytes, 11, t.length);
         return bytes;
     }
 
     private byte[] bufferMyLocation() {
-        byte[] bytes = new byte[25];
+        byte[] bytes = new byte[17];
         bytes[0] = Converter.intToByte(PacketType.reversedMap.get(type));
-        byte[] lat = Converter.floatToByte((long) this.getArg1());
+        byte[] lat = Converter.floatToByte((float) this.getArg1());
         System.arraycopy(lat, 0, bytes, 1, lat.length);
-        byte[] lon = Converter.floatToByte((long) this.getArg2());
-        System.arraycopy(lon, 0, bytes, 9, lon.length);
+        byte[] lon = Converter.floatToByte((float) this.getArg2());
+        System.arraycopy(lon, 0, bytes, 5, lon.length);
         byte[] dt = Converter.longToByte((long) this.getArg3());
-        System.arraycopy(dt, 0, bytes, 17, dt.length);
+        System.arraycopy(dt, 0, bytes, 9, dt.length);
         return bytes;
     }
 

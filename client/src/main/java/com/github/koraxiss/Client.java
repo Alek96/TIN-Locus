@@ -1,6 +1,8 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import javax.crypto.NoSuchPaddingException;
+
+import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -8,10 +10,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Client {
+public class Client implements Runnable{
     private LayerManager layerManager;
     private BlockingQueue<Message> childMessages;
     private BlockingQueue<Message> sendInstructions;
+    private BlockingQueue<Message> androidAppMessages;
     private Thread readerThread;
     private Thread writerThread;
     private Thread mainThread;
@@ -21,21 +24,23 @@ public class Client {
     private final Object sendingLock;
     private final Object receivingLock;
 
-    public Client() throws IOException {
+    public Client(BlockingQueue<Message> androidAppMessages, BlockingQueue<Message> childMessages, File fileDir) throws IOException {
         layerManager = new LayerManager();
-        childMessages = new LinkedBlockingQueue<>();
+        this.childMessages = childMessages;
         sendInstructions = new LinkedBlockingQueue<>();
+        this.androidAppMessages = androidAppMessages;
         readerThread = new Thread(new ReaderThread());
         writerThread = new Thread(new WriterThread());
-        mainThread = Thread.currentThread();
         running = true;
         receiveNext = true;
         sendingLock = new Object();
         receivingLock = new Object();
-        this.start();
+        CipherModule.setFileDir(fileDir);
     }
 
-    public void start() {
+    @Override
+    public void run() {
+        mainThread = Thread.currentThread();
         writerThread.start();
         readerThread.start();
         Message message;
@@ -45,9 +50,9 @@ public class Client {
                 if (message.getType() == Message.MessageType.PACKET) {
                     switch (message.getPacket().getType()) {
                         case _OPEN:
-                            break:
+                            break;
                         case _OPEN_PROT:
-//                            androidAppQueue.put(new Message(Message.MessageType.PACKET, new Packet(PacketType._SET_NAME)));
+                            androidAppMessages.put(new Message(Message.MessageType.PACKET, new Packet(PacketType._SET_NAME)));
                             break;
                         case _ALIVE:
                             sendInstructions.put(new Message(Message.MessageType.PACKET, new Packet(PacketType._ACK_OK)));
@@ -99,7 +104,8 @@ public class Client {
                             sendInstructions.put(new Message(Message.MessageType.PACKET, packet4));
                             break;
                         case _NEW_FOLLOWED:
-//                            androidAppQueue.put(message);
+                            androidAppMessages.put(message);
+                            break;
                         case _REMOVE_FOLLOWED:
                             Packet packet3 = message.getPacket();
                             sendInstructions.put(new Message(Message.MessageType.PACKET, packet3));
@@ -109,7 +115,7 @@ public class Client {
                             sendInstructions.put(new Message(Message.MessageType.PACKET, packet2));
                             break;
                         case _LOCATION:
-//                            androidAppQueue.put(message);
+                            androidAppMessages.put(message);
                             break;
                         case _ACK_ERR:
                             break;
@@ -128,8 +134,8 @@ public class Client {
                     receivingLock.notify();
                 }
             } catch (InterruptedException | IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
+                e.printStackTrace();
                 stop();
-//                e.printStackTrace();
             }
         }
     }

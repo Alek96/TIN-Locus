@@ -1,6 +1,8 @@
-package com.github.koraxiss;
+package main.java.com.github.koraxiss;
 
 import java.io.IOException;
+
+import main.java.com.github.koraxiss.Packet;
 
 public interface Messenger {
     void send(byte[] buffer, int n) throws IOException;
