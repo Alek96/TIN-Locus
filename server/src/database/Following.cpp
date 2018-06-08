@@ -1,19 +1,19 @@
-#include "Watcher.h"
+#include "Following.h"
 
-Watcher::Watcher(short id)
+Following::Following(short id)
         : id(id) {}
 
-bool Watcher::operator==(const Watcher &rhs) const {
+bool Following::operator==(const Following &rhs) const {
     return id == rhs.id &&
            time == rhs.time &&
            name == rhs.name;
 }
 
-bool Watcher::operator!=(const Watcher &rhs) const {
+bool Following::operator!=(const Following &rhs) const {
     return !(rhs == *this);
 }
 
-bool Watcher::operator<(const Watcher &rhs) const {
+bool Following::operator<(const Following &rhs) const {
     if (id < rhs.id)
         return true;
     if (rhs.id < id)
@@ -25,15 +25,15 @@ bool Watcher::operator<(const Watcher &rhs) const {
     return name < rhs.name;
 }
 
-bool Watcher::operator>(const Watcher &rhs) const {
+bool Following::operator>(const Following &rhs) const {
     return rhs < *this;
 }
 
-bool Watcher::operator<=(const Watcher &rhs) const {
+bool Following::operator<=(const Following &rhs) const {
     return !(rhs < *this);
 }
 
-bool Watcher::operator>=(const Watcher &rhs) const {
+bool Following::operator>=(const Following &rhs) const {
     return !(*this < rhs);
 }
 

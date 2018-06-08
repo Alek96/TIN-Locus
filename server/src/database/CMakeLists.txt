@@ -2,7 +2,7 @@ project(Locus_database)
 
 set(SOURCE_FILES
         Position.cpp Position.h
-        Watcher.cpp Watcher.h
+        Following.cpp Following.h
         ClientData.cpp ClientData.h
         ClientDataManager.cpp ClientDataManager.h
         Database.cpp Database.h)

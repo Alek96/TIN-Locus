@@ -8,7 +8,7 @@
 #include <ctime>
 
 #include "Position.h"
-#include "Watcher.h"
+#include "Following.h"
 
 struct ClientData {
     ClientData() = default;
@@ -18,7 +18,7 @@ struct ClientData {
     std::string name;
     std::list<Position> positions; //x, y, time
     std::list<short> followers; //i'm sending the location
-    std::list<Watcher> following; //they are sending the location
+    std::list<Following> following; //they are sending the location
 
 //    friend class cereal::access;
 
